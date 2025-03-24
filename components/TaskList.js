@@ -12,20 +12,22 @@ const TaskList = ({ tasks, onDeleteTask, onToggleComplete }) => {
         return `${title} (${count})`;
     };
 
+    const loadMoreTasks = () => {
+        console.log("Fin de la liste atteinte !");
+        // Logique pour charger plus de tâches
+    };
+
     return (
         <View style={styles.container}>
             {/* Section des tâches en cours */}
-            <Text
-                style={[
-                    styles.sectionTitle,
-                    activeTasks.length === 0 && styles.emptySectionTitle, // Style si vide
-                ]}
-            >
-                {getSectionTitle('Tâches en cours', activeTasks.length)}
-            </Text>
-            {activeTasks.length === 0 ? (
-                <Text style={styles.emptyText}>Aucune tâche en cours !</Text>
-            ) : (
+            {/*<Text*/}
+            {/*    style={[*/}
+            {/*        styles.sectionTitle,*/}
+            {/*        activeTasks.length === 0 && styles.emptySectionTitle,*/}
+            {/*    ]}*/}
+            {/*>*/}
+            {/*    {getSectionTitle('Tâches en cours', activeTasks.length)}*/}
+            {/*</Text>*/}
                 <FlatList
                     data={activeTasks}
                     keyExtractor={(item) => item.id}
@@ -36,9 +38,23 @@ const TaskList = ({ tasks, onDeleteTask, onToggleComplete }) => {
                             onToggleComplete={onToggleComplete}
                         />
                     )}
+                    ListHeaderComponent={
+                        <Text
+                            style={[
+                                styles.sectionTitle,
+                                activeTasks.length === 0 && styles.emptySectionTitle,
+                            ]}
+                        >
+                            {getSectionTitle('Tâches en cours', activeTasks.length)}
+                        </Text>
+                    }
+                    initialNumToRender={5}
+                    onEndReached={loadMoreTasks}
+                    onEndReachedThreshold={0.5} // Déclenche à 50% de la fin
+                    ListEmptyComponent={<Text> style={styles.emptyText}>Aucune tâche en cours !</Text>}
+                    ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: '#ddd' }} />}
                     style={styles.list}
                 />
-            )}
 
             {/* Section des tâches terminées */}
             {completedTasks.length > 0 && (
@@ -76,15 +92,15 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#6200ee', // Violet par défaut
+        color: '#6200ee',
         marginVertical: 10,
     },
     emptySectionTitle: {
-        color: '#888', // Gris si vide
-        fontStyle: 'italic', // Italique pour un effet subtil
+        color: '#888',
+        fontStyle: 'italic',
     },
     list: {
-        flexGrow: 0,
+        flexGrow: 0, //empêche la liste de s’étendre trop (elle prend juste l’espace nécessaire)
     },
     emptyText: {
         textAlign: 'center',
