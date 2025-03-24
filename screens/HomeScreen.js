@@ -16,6 +16,12 @@ const HomeScreen = () => {
         navigation.navigate('Tasks');
     };
 
+    // Fonction pour naviguer vers l’écran des notes
+    const goToNotes = () => {
+        navigation.navigate('Notes');
+    };
+
+
     return (
         <View style={styles.container}>
             {/* Image de bienvenue */}
@@ -28,7 +34,11 @@ const HomeScreen = () => {
             <ActivityIndicator size="large" color="#6200ee" style={styles.spinner} />
             {/* Bouton pour aller à l’écran des tâches */}
             <TouchableOpacity style={styles.button} onPress={goToTasks}>
-                <Text style={styles.buttonText}>Commencer</Text>
+                <Text style={styles.buttonText}>Task</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={goToNotes}>
+                <Text style={styles.buttonText}>Notes</Text>
             </TouchableOpacity>
         </View>
     );

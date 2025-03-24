@@ -13,13 +13,24 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Cette application a besoin d’accéder à la caméra pour ajouter des images aux notes.",
+        "NSMicrophoneUsageDescription": "Cette application a besoin d’accéder au microphone pour enregistrer des notes vocales.",
+        "NSPhotoLibraryUsageDescription": "Cette application a besoin d’accéder à la galerie pour ajouter des images aux notes."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
