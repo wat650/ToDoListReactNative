@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence, Easing } from 'react-native-reanimated';
 
 const AddNoteScreen = () => {
     const [title, setTitle] = useState('');
@@ -21,6 +22,39 @@ const AddNoteScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { note, isEdit } = route.params || {};
+
+    // Valeur animée pour l'échelle du bouton de sauvegarde
+    const scale = useSharedValue(1);
+
+    // Style animé pour le bouton de sauvegarde
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
+
+    // Animation de pulsation en boucle
+    useEffect(() => {
+        scale.value = withRepeat(
+            withSequence(
+                withTiming(1.1, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+                withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) })
+            ),
+            -1, // Répéter indéfiniment
+            true // Inverser à chaque répétition
+        );
+    }, [scale]);
+
+    // Fonction pour déclencher l'animation de "bounce" au clic
+    const handleSavePress = async () => {
+        // Animation de "bounce"
+        scale.value = withSequence(
+            withTiming(0.9, { duration: 100, easing: Easing.out(Easing.ease) }),
+            withTiming(1.2, { duration: 100, easing: Easing.out(Easing.ease) }),
+            withTiming(1, { duration: 100, easing: Easing.out(Easing.ease) })
+        );
+
+        // Appeler la fonction de sauvegarde
+        await saveNote();
+    };
 
     useEffect(() => {
         if (isEdit && note) {
@@ -209,7 +243,6 @@ const AddNoteScreen = () => {
             const dataToSave = JSON.stringify(notes);
             console.log('Taille des données à sauvegarder (en octets):', new TextEncoder().encode(dataToSave).length);
             await AsyncStorage.setItem('notes', dataToSave);
-            // Rediriger directement vers NotesScreen
             navigation.navigate('Notes');
         } catch (error) {
             console.error('Erreur lors de la sauvegarde de la note', error);
@@ -290,12 +323,15 @@ const AddNoteScreen = () => {
                     </View>
                 ))}
             </ScrollView>
-            <TouchableOpacity style={styles.saveButton} onPress={saveNote}>
-                <Icon name="save" size={24} color="#fff" />
-            </TouchableOpacity>
+            <Animated.View style={[styles.saveButton, animatedStyle]}>
+                <TouchableOpacity onPress={handleSavePress}>
+                    <Icon name="save" size={24} color="#fff" />
+                </TouchableOpacity>
+            </Animated.View>
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
