@@ -48,23 +48,27 @@ const AddNoteScreen = () => {
 
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ['images'],
-                allowsEditing: true,
                 quality: 1,
+                allowsMultipleSelection: true,
+                allowsEditing: false,
             });
 
             console.log('Résultat de ImagePicker:', result);
             if (!result.canceled && result.assets && result.assets.length > 0) {
-                const imageData = result.assets[0];
-                const fileName = `${FileSystem.documentDirectory}image_${Date.now()}.jpg`;
-                await FileSystem.moveAsync({
-                    from: imageData.uri,
-                    to: fileName,
-                });
-                setImages([...images, fileName]);
+                const newImages = [];
+                for (const imageData of result.assets) {
+                    const fileName = `${FileSystem.documentDirectory}image_${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`;
+                    await FileSystem.moveAsync({
+                        from: imageData.uri,
+                        to: fileName,
+                    });
+                    newImages.push(fileName);
+                }
+                setImages([...images, ...newImages]);
             }
         } catch (error) {
-            console.error('Erreur lors de l’ajout de l’image:', error);
-            Alert.alert('Erreur', 'Impossible d’ajouter une image. Veuillez réessayer.');
+            console.error('Erreur lors de l’ajout des images:', error);
+            Alert.alert('Erreur', 'Impossible d’ajouter les images. Veuillez réessayer.');
         }
     };
 
