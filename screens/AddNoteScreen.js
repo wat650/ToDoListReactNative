@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlignVertical: 'top',
         marginBottom: 10,
-        minHeight: 100,
+        minHeight: 250,
     },
     mediaButtons: {
         flexDirection: 'row',

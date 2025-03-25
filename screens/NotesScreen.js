@@ -23,11 +23,16 @@ const NotesScreen = () => {
                     minute: '2-digit',
                 }),
             }));
+            // Loguer les dates avant le tri
+            console.log('Dates avant le tri:', loadedNotes.map(note => ({ id: note.id, date: note.date })));
+            // Tri des notes par date (du plus récent au plus ancien)
             loadedNotes.sort((a, b) => {
                 const dateA = parseDate(a.date);
                 const dateB = parseDate(b.date);
-                return dateB - dateA;
+                return dateB - dateA; // Plus récent en haut
             });
+            // Loguer les dates après le tri
+            console.log('Dates après le tri:', loadedNotes.map(note => ({ id: note.id, date: note.date })));
             setNotes(loadedNotes);
         } catch (error) {
             console.error('Erreur lors du chargement des notes', error);
@@ -35,18 +40,28 @@ const NotesScreen = () => {
     }, []);
 
     const parseDate = (dateString) => {
-        if (!dateString) return new Date();
+        if (!dateString) return new Date(0); // Si pas de date, on met une date très ancienne
         try {
-            const [day, month, time] = dateString.split(' ');
+            // Remplacer "à" par un espace pour uniformiser le format
+            const cleanedDateString = dateString.replace(' à ', ' ');
+            const [day, month, time] = cleanedDateString.split(' ');
             const [hour, minute] = time.split(':');
             const monthIndex = [
                 'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
                 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'
             ].indexOf(month.toLowerCase());
-            return new Date(2025, monthIndex, parseInt(day), parseInt(hour), parseInt(minute));
+            if (monthIndex === -1) {
+                console.warn('Mois invalide dans la date:', dateString);
+                return new Date(0); // Si le mois est invalide, on met une date ancienne
+            }
+            // Utiliser l’année actuelle pour les nouvelles notes
+            const currentYear = new Date().getFullYear();
+            const parsedDate = new Date(currentYear, monthIndex, parseInt(day), parseInt(hour), parseInt(minute));
+            console.log(`Date parsée pour "${dateString}":`, parsedDate);
+            return parsedDate;
         } catch (error) {
-            console.error('Erreur lors du parsing de la date', dateString, error);
-            return new Date();
+            console.error('Erreur lors du parsing de la date:', dateString, error);
+            return new Date(0); // En cas d’erreur, on met une date ancienne
         }
     };
 
